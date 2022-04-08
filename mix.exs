@@ -4,11 +4,28 @@ defmodule FirstMixArchive.MixProject do
   def project do
     [
       app: :first_mix_archive,
-      version: "0.1.0",
+      version: version(),
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases
     ]
+  end
+
+  def version, do: "1.0.0"
+
+  defp aliases do
+    [
+      build: [&build_releases/1]
+    ]
+  end
+
+  defp build_releases(_) do
+    Mix.Tasks.Compile.run([])
+    Mix.Tasks.Archive.Build.run([])
+    Mix.Tasks.Archive.Build.run(["--output=foo.ez"])
+    File.rename("foo.ez", "./foo_archives/foo.ez")
+    File.rename("foo-#{version()}.ez", "./foo_archives/foo-#{version()}.ez")
   end
 
   # Run "mix help compile.app" to learn about applications.
